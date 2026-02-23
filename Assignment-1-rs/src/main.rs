@@ -5,9 +5,11 @@ mod sorting;
 use rand::prelude::*;
 
 fn main() {
-    for i in 1..100 {
+    for i in 1..1000 {
         run_merge_sort(i);
     }
+    run_merge_sort(200000);
+    run_selection_sort(200000);
 }
 
 fn run_selection_sort(size: u32) {
@@ -17,7 +19,7 @@ fn run_selection_sort(size: u32) {
         arr.push(rng.random_range(0..=100));
     }
     sorting::selection_sort(&mut arr);
-    //println!("{:04}. Sorted: {}", size, arr.is_sorted());
+    println!("{:04}. Sorted: {}", size, arr.is_sorted());
 }
 
 fn run_merge_sort(size: u32) {
@@ -27,6 +29,7 @@ fn run_merge_sort(size: u32) {
         arr.push(rng.random_range(0..=100));
     }
     sorting::merge_sort(&mut arr);
+    println!("{:04}. Sorted: {}", size, arr.is_sorted());
 }
 
 #[cfg(test)]

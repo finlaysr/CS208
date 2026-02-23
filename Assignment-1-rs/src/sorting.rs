@@ -1,5 +1,3 @@
-use std::fmt::Debug;
-
 pub fn selection_sort<T: Ord>(array: &mut [T]) {
     let len = array.len();
     for i in 0..len {
@@ -16,59 +14,45 @@ pub fn selection_sort<T: Ord>(array: &mut [T]) {
     }
 }
 
-pub fn merge_sort<T: Ord + Copy + Debug>(array: &mut [T]) {
-    let right = array.len() - 1;
-    merge_sort_args(array, 0, right);
-}
-
-fn merge_sort_args<T: Ord + Copy + Debug>(array: &mut [T], left: usize, right: usize) {
-    if left < right {
-        let mid: usize = (left + right) / 2;
-
-        merge_sort_args(array, left, mid);
-        merge_sort_args(array, mid + 1, right);
-
-        merge_array(array, left, mid, right);
+pub fn merge_sort<T: Ord + Copy>(array: &mut [T]) {
+    if array.len() <= 1 {
+        return;
     }
+
+    let mid = array.len() / 2;
+    merge_sort(&mut array[..mid]);
+    merge_sort(&mut array[mid..]);
+
+    merge_array(
+        &mut array[..mid].to_vec(),
+        &mut array[mid..].to_vec(),
+        array,
+    );
 }
 
-fn merge_array<T: Ord + Copy + Debug>(array: &mut [T], left: usize, mid: usize, right: usize) {
-    let mut tmp_arr: Vec<Option<T>> = vec![];
-    tmp_arr.resize(right - left + 1, None);
+fn merge_array<T: Ord + Copy>(left: &mut [T], right: &mut [T], out: &mut [T]) {
+    let (mut left_idx, mut right_idx, mut tmp_idx) = (0, 0, 0);
 
-    let mut left_index = left;
-    let mut right_index = mid + 1;
-    let mut tmp_index = 0;
-
-    while left_index <= mid && right_index <= right {
-        if array[left_index] < array[right_index] {
-            tmp_arr[tmp_index] = Some(array[left_index]);
-            left_index += 1;
+    while left_idx < left.len() && right_idx < right.len() {
+        if left[left_idx] <= right[right_idx] {
+            out[tmp_idx] = left[left_idx];
+            left_idx += 1;
         } else {
-            tmp_arr[tmp_index] = Some(array[right_index]);
-            right_index += 1;
+            out[tmp_idx] = right[right_idx];
+            right_idx += 1;
         }
-        tmp_index += 1;
+        tmp_idx += 1;
     }
 
-    while left_index <= mid {
-        tmp_arr[tmp_index] = Some(array[left_index]);
-        tmp_index += 1;
-        left_index += 1;
+    while left_idx < left.len() {
+        out[tmp_idx] = left[left_idx];
+        left_idx += 1;
+        tmp_idx += 1;
     }
 
-    while right_index <= right {
-        tmp_arr[tmp_index] = Some(array[right_index]);
-        tmp_index += 1;
-        right_index += 1;
-    }
-
-    let tmp_arr: Vec<T> = tmp_arr
-        .iter()
-        .map(|x| x.expect("Value unitialized!"))
-        .collect();
-
-    for i in 0..tmp_arr.len() {
-        array[left + i] = tmp_arr[i];
+    while right_idx < right.len() {
+        out[tmp_idx] = right[right_idx];
+        right_idx += 1;
+        tmp_idx += 1;
     }
 }
