@@ -5,3 +5,17 @@ edition = "2024"
 
 [dependencies]
 rand = "0.10.0"
+
+[dev-dependencies]
+gungraun = "0.17.2"
+
+[profile.release]
+strip = true
+
+[profile.bench]
+debug = true
+strip = false
+
+[[bench]]
+name = "library_benchmark"
+harness = false
