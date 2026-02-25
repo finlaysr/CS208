@@ -8,3 +8,10 @@ pub fn random_array(size: usize) -> Vec<i32> {
     }
     ret
 }
+
+pub fn reversed_array(size: usize) -> Vec<i32> {
+    if size == 0 {
+        return vec![];
+    }
+    (0..size as i32).rev().collect()
+}

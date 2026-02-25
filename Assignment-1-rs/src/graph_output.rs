@@ -3,6 +3,7 @@ use plotters::prelude::*;
 use std::iter::zip;
 use std::path::Path;
 
+#[derive(Debug)]
 struct Data {
     lengths: Vec<i32>,
     selection: Vec<i32>,
@@ -18,9 +19,9 @@ impl Data {
     }
 }
 
-pub fn plot(path: &Path) {
-    let data = read_data(path);
-    let drawing_area = BitMapBackend::new("graph.png", (1000, 750)).into_drawing_area();
+pub fn plot(data_location: &Path, output_location: &Path) {
+    let data = read_data(data_location);
+    let drawing_area = BitMapBackend::new(output_location, (1000, 750)).into_drawing_area();
     drawing_area.fill(&WHITE).unwrap();
     let mut chart = ChartBuilder::on(&drawing_area)
         .margin(10)
@@ -47,7 +48,7 @@ pub fn plot(path: &Path) {
             BLUE,
         ))
         .unwrap()
-        .label("insertion Sort")
+        .label("Merge Sort")
         .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], BLUE));
 
     chart
