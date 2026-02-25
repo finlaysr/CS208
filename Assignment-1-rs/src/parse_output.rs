@@ -33,7 +33,7 @@ pub fn parse_output(path: &Path) {
     });
 
     //write to CSV
-    let mut writer = csv::Writer::from_path("ouput.csv").unwrap();
+    let mut writer = csv::Writer::from_path("output.csv").unwrap();
     writer
         .write_record(["Array Length", "Selection", "Merge"])
         .unwrap();
@@ -49,9 +49,10 @@ pub fn parse_output(path: &Path) {
 }
 
 fn read_lenghts(path: &Path) -> Vec<u32> {
+    println!("path: {:?}", path);
     fs::read_to_string(path)
         .unwrap()
-        .split('\n')
+        .lines()
         .map(|c| c.parse().unwrap())
         .collect()
 }

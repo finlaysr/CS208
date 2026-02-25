@@ -3,12 +3,12 @@ use Assignment_1_rs::sorting;
 use gungraun::{library_benchmark, library_benchmark_group, main};
 use std::hint::black_box;
 
-// get a random array of the given size for testing
+// Get a random array of the given size for testing
 fn get_test_array(size: String) -> Vec<i32> {
     other::random_array(size.parse().unwrap())
 }
 
-// after benchmarking, check that the array is actually sorted
+// After benchmarking, check that the array is actually sorted
 fn check_sorted(array: Vec<i32>) {
     assert!(array.is_sorted(), "Array was not sorted!!");
 }
