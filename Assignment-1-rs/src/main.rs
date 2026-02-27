@@ -6,15 +6,23 @@ use std::process::Command;
 mod graph_output;
 mod parse_output;
 
+const BENCH_ITERATIONS: i32 = 10;
+
 fn main() {
     let bench_type = BenchType::from_file(Path::new("./benches/bench_type.txt"));
 
-    for dir in ["graphs", "test_data", "output_data"] {
+    // Ensure all required directories exist and are clean
+    for dir in [
+        "graphs",
+        "test_data/before",
+        "test_data/after",
+        "output_data",
+    ] {
         fs::remove_dir_all(Path::new(&format!("./{}/{}", dir, bench_type))).ok();
         fs::create_dir_all(Path::new(&format!("./{}/{}", dir, bench_type))).unwrap();
     }
 
-    for i in 1..=10 {
+    for i in 1..=BENCH_ITERATIONS {
         println!("Running benchmark iteration {i}");
         let status = Command::new("cargo")
             .arg("bench")
@@ -42,7 +50,7 @@ fn main() {
     fs::create_dir_all(Path::new("./py_plotting/graphs")).unwrap();
     Command::new("uv")
         .current_dir("./py_plotting")
-        .args(["run", "main.py", format!("{}", bench_type).as_str()])
+        .args(["run", "main.py"])
         .status()
         .expect("Failed to create graph");
 }

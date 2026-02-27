@@ -49,6 +49,7 @@ pub fn parse_output(path: &Path, output_location: &Path) {
                 merge_data[i].to_string(),
             ])
             .unwrap();
+        writer.flush().expect("Couldn't flush the writer");
     }
 }
 

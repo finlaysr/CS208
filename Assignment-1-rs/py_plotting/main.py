@@ -12,10 +12,14 @@ merge: list[list[int]] = []
 selection_avg = []
 selection_min = []
 selection_max = []
+selection_delta = 0
+selection_delta_percent = 0
 
 merge_avg = []
 merge_min = []
 merge_max = []
+merge_delta = 0
+merge_delta_percent = 0
 
 crossover = 0
 bench_type = ""
@@ -23,11 +27,10 @@ bench_type = ""
 
 def read_args():
     global bench_type
-    if argv[1] in ("reversed", "linear", "random"):
-        bench_type = argv[1]
-        print(bench_type)
-    else:
-        exit("Invalid argument!")
+    with open("../benches/bench_type.txt") as file:
+        bench_type = file.read().splitlines()[0]
+    if bench_type not in ("reversed", "linear", "random"):
+        exit("Invalid bench type!")
 
 
 def read_data(path):
@@ -49,6 +52,7 @@ def read_data(path):
 
 
 def proccess_data():
+    global merge_delta, merge_delta_percent, selection_delta, selection_delta_percent
     global crossover
     for group in zip(*selection):
         selection_avg.append(average(group))
@@ -63,23 +67,26 @@ def proccess_data():
             crossover = lenghts[0][merge_avg.index(m)]
             print("crossover: ", crossover)
             break
-    print(
-        "max merge delta: ",
-        max([(hi - low) for (hi, low) in zip(merge_max, merge_min)]),
-    )
-    print(
-        "max selection delta: ",
-        max([(hi - low) for (hi, low) in zip(selection_max, selection_min)]),
-    )
-    print("Iterations: " + str(len(lenghts)))
+
+    for hi, low in zip(merge_max, merge_min):
+        if (hi - low) > merge_delta:
+            merge_delta = hi - low
+            merge_delta_percent = round(merge_delta / hi * 100, 2)
+
+    for hi, low in zip(selection_max, selection_min):
+        if (hi - low) > selection_delta:
+            selection_delta = hi - low
+            selection_delta_percent = round(selection_delta / hi * 100, 2)
 
 
 def make_plot():
-    fig, ax = plt.subplots()
-    ax.plot(lenghts[0], merge_avg, color="blue", label="Merge Sort")
+    fig, ax = plt.subplots(figsize=(14, 8))
+    ax.plot(lenghts[0], merge_avg, color="blue", label="Merge Sort", lw=1, marker=".")
     ax.fill_between(lenghts[0], merge_max, merge_min, color="blue", alpha=0.2)
 
-    ax.plot(lenghts[0], selection_avg, color="red", label="Selection Sort")
+    ax.plot(
+        lenghts[0], selection_avg, color="red", label="Selection Sort", lw=1, marker="."
+    )
     ax.fill_between(lenghts[0], selection_max, selection_min, color="red", alpha=0.2)
 
     ax.set_xlabel("Array length")
@@ -94,38 +101,35 @@ def make_plot():
     ax.yaxis.set_minor_locator(MultipleLocator(5_000))
 
     ax.annotate(
-        "Point at which merge \nsort becomes more efficient\n("
-        + str(crossover)
-        + ", "
-        + str(merge_avg[crossover])
-        + ")",
+        f"""Point at which merge \nsort becomes more efficient
+        ({str(crossover)}, {str(int(merge_avg[crossover]))})""",
         xycoords="data",
-        xytext=(0.01, 0.99),
+        xytext=(0.02, 0.97),
         textcoords="axes fraction",
         va="top",
         ha="left",
-        size=10,
+        size=8,
         bbox=dict(facecolor="white", alpha=1.0),
-        arrowprops=dict(facecolor="black", shrink=0.01),
+        arrowprops=dict(facecolor="black", shrink=0.01, width=2),
         xy=(crossover, merge_avg[crossover]),
     )
     ax.plot([crossover], merge_avg[crossover], "o", color="black")
 
     ax.text(
-        0.99,
-        0.01,
+        0.98,
+        0.025,
         f"""Iterations: {str(len(lenghts))}
-        max merge delta: {max([(hi - low) for (hi, low) in zip(merge_max, merge_min)])}
-        max selection delta: {max([(hi - low) for (hi, low) in zip(selection_max, selection_min)])}""",
+        max merge delta: {merge_delta} ({merge_delta_percent:.2f}%)
+        max selection delta: {selection_delta} ({selection_delta_percent:.2f}%)""",
         verticalalignment="bottom",
         horizontalalignment="right",
         transform=ax.transAxes,
-        size=8,
+        size=7,
         bbox=dict(facecolor="white", alpha=1.0),
     )
 
     plt.title(f"Sorting Comparison - {bench_type}")
-    plt.savefig(f"graphs/{bench_type}.png", dpi=600, bbox_inches="tight")
+    plt.savefig(f"graphs/{bench_type}.png", dpi=1000, bbox_inches="tight")
     plt.show()
 
 

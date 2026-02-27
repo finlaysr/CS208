@@ -3,10 +3,10 @@ use Assignment_1_rs::other::BenchType;
 use Assignment_1_rs::sorting;
 use gungraun::{library_benchmark, library_benchmark_group, main};
 use std::env;
-use std::fs::File;
+use std::fs::OpenOptions;
 use std::hint::black_box;
-use std::io::Write;
 use std::path::Path;
+
 // Get an array of the given size for testing
 fn get_test_array(size: String) -> Vec<i32> {
     let bench_type = BenchType::from_file(Path::new("./benches/bench_type.txt"));
@@ -16,19 +16,41 @@ fn get_test_array(size: String) -> Vec<i32> {
         BenchType::Random => other::random_array(size.parse().unwrap()),
     };
 
-    let p = format!("./test_data/{}/{}.txt", bench_type, size);
-    println!("{}", p);
+    // Save the test data used for verification
+    let file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(format!("./test_data/before/{}/{}.csv", bench_type, size))
+        .expect("Couldn't open csv file");
+    let mut writer = csv::Writer::from_writer(file);
+    writer
+        .write_record(array.iter().map(|x| x.to_string()))
+        .expect("Couldn't write to csv");
+    writer.flush().expect("Couldn't flush the writer");
 
-    //fs::create_dir_all(&p).expect("couldn't make test data directory");
-    let mut file = File::create(p.as_str()).unwrap();
-    array
-        .iter()
-        .for_each(|n| file.write_all((n.to_string() + "\n").as_bytes()).unwrap());
     array
 }
 
-// After benchmarking, check that the array is actually sorted
 fn check_sorted(array: Vec<i32>) {
+    // Save the data after sorting for verification
+    // Merge on odd lines, selection on even lines
+    let bench_type = BenchType::from_file(Path::new("./benches/bench_type.txt"));
+    let file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(format!(
+            "./test_data/after/{}/{}.csv",
+            bench_type,
+            array.len()
+        ))
+        .expect("Couldn't open csv file");
+    let mut writer = csv::Writer::from_writer(file);
+    writer
+        .write_record(array.iter().map(|x| x.to_string()))
+        .expect("Couldn't write to csv");
+    writer.flush().expect("Couldn't flush the writer");
+
+    // Check the array was sorted, exit if not
     assert!(array.is_sorted(), "Array was not sorted!!");
 }
 
@@ -48,7 +70,7 @@ fn bench_selection(mut array: Vec<i32>) -> Vec<i32> {
     black_box(array)
 }
 
-// Outputs
+// Run benchmarks
 library_benchmark_group!(
     name = bench_sorting,
     benchmarks = [bench_merge, bench_selection]
