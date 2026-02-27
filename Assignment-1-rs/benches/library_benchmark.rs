@@ -1,3 +1,6 @@
+// This is the main benchmark runner
+// Uses instruction counting for extremely accurate benchmarking
+
 use Assignment_1_rs::other;
 use Assignment_1_rs::other::BenchType;
 use Assignment_1_rs::sorting;
@@ -31,6 +34,7 @@ fn get_test_array(size: String) -> Vec<i32> {
     array
 }
 
+// After benchmarking, check the data was actually sorted
 fn check_sorted(array: Vec<i32>) {
     // Save the data after sorting for verification
     // Merge on odd lines, selection on even lines

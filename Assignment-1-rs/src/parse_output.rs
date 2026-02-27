@@ -1,3 +1,4 @@
+// Reads the logfiles produced by `gungraun` and stores the results in csv files in `output_data`
 use std::fs::{self};
 use std::path::Path;
 
@@ -7,6 +8,7 @@ pub fn parse_output(path: &Path, output_location: &Path) {
     let mut merge_data = vec![];
     let mut selection_data = vec![];
 
+    // Read the instructions count from all the logfiles for each algorithm
     fs::read_dir(path)
         .expect("No data logged. Make sure you have run `cargo bench` first!")
         .for_each(|folder| {

@@ -6,7 +6,7 @@
 * A report on the results should be written
 
 ## Project Structure
-* The project uses the rust library `gungraun` for extremely accurate benchmarking
+* The project uses the rust library `gungraun` for extremely accurate instruction counting benchmarking
 * Code overview:
   1. The main file starts and loads the type of benchmark to be run from `benches/bench_type.txt`. This is either `random`, `linear`, or `reversed`. This determines the layout of the array to be sorted
   2. The main file clears out all the directories to be used. This involves:
@@ -19,3 +19,14 @@
   5. A python script runs `matplotlib` which generates a graph combining the data from all the runs
   6. This graph is saved to a file
 
+## Dependencies
+
+* `Valgrind`: A Linux library that contains for instruction counting
+* `gungraun-runner`: Runs the benchmarks for the Rust library `gungraun`
+* `uv`: A python package manager for running and installing python dependencies (used to generate pretty graphs)
+
+## Usage
+
+* `cargo run` will automatically run the benchmarks and generate a graph
+* Change the `./benches/bench_type.txt` file to one of `linear`, `random`, or `reversed`
+* Change `./benches/lengths.txt` to control what array lengths are tested

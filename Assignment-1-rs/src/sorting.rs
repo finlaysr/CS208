@@ -1,3 +1,4 @@
+// Selection and Merge sort in rust
 pub fn selection_sort<T: Ord>(array: &mut [T]) {
     let len = array.len();
     for i in 0..len {

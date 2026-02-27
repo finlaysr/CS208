@@ -1,3 +1,6 @@
+// Create graph of single benchmark, output in `./graphs`
+// Not really used anymore since graphs now created using matplotlib in python
+
 use csv::Reader;
 use plotters::prelude::*;
 use std::iter::zip;

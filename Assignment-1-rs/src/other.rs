@@ -1,9 +1,11 @@
+// A bunch of useful things
 use core::fmt;
 use std::{fmt::Display, fs, path::Path, str::FromStr};
 
 use rand::prelude::*;
 #[derive(Debug)]
 
+// Stores what kind of benchmark is being run
 pub enum BenchType {
     Reversed,
     Linear,
@@ -23,6 +25,7 @@ impl BenchType {
     }
 }
 
+// For converting a string to this type
 #[derive(Debug)]
 pub struct ParseBenchTypeError;
 impl FromStr for BenchType {
@@ -37,6 +40,7 @@ impl FromStr for BenchType {
     }
 }
 
+// Convert this type to a string
 impl Display for BenchType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(

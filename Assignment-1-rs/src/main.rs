@@ -21,7 +21,9 @@ fn main() {
         fs::remove_dir_all(Path::new(&format!("./{}/{}", dir, bench_type))).ok();
         fs::create_dir_all(Path::new(&format!("./{}/{}", dir, bench_type))).unwrap();
     }
+    fs::create_dir_all(Path::new("./py_plotting/graphs")).unwrap();
 
+    // Run the benchmark a specified amount of times
     for i in 1..=BENCH_ITERATIONS {
         println!("Running benchmark iteration {i}");
         let status = Command::new("cargo")
@@ -47,7 +49,7 @@ fn main() {
         );
     }
 
-    fs::create_dir_all(Path::new("./py_plotting/graphs")).unwrap();
+    // Plot the results using a python script
     Command::new("uv")
         .current_dir("./py_plotting")
         .args(["run", "main.py"])
