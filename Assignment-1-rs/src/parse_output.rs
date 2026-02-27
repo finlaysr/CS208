@@ -2,7 +2,7 @@ use std::fs::{self};
 use std::path::Path;
 
 pub fn parse_output(path: &Path, output_location: &Path) {
-    let lengths = read_lenghts(Path::new("./benches/lengths"));
+    let lengths = read_lenghts(Path::new("./benches/lengths.txt"));
     println!("lens: {:?}", lengths);
     let mut merge_data = vec![];
     let mut selection_data = vec![];

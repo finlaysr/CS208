@@ -3,8 +3,7 @@ import csv
 import os
 from matplotlib import pyplot as plt
 from numpy import average
-
-BENCH_TYPE = "reversed"
+from sys import argv, exit
 
 lenghts: list[list[int]] = []
 selection: list[list[int]] = []
@@ -19,6 +18,16 @@ merge_min = []
 merge_max = []
 
 crossover = 0
+bench_type = ""
+
+
+def read_args():
+    global bench_type
+    if argv[1] in ("reversed", "linear", "random"):
+        bench_type = argv[1]
+        print(bench_type)
+    else:
+        exit("Invalid argument!")
 
 
 def read_data(path):
@@ -62,6 +71,7 @@ def proccess_data():
         "max selection delta: ",
         max([(hi - low) for (hi, low) in zip(selection_max, selection_min)]),
     )
+    print("Iterations: " + str(len(lenghts)))
 
 
 def make_plot():
@@ -101,13 +111,27 @@ def make_plot():
     )
     ax.plot([crossover], merge_avg[crossover], "o", color="black")
 
-    plt.title(f"Sorting Comparison - {BENCH_TYPE}")
-    plt.savefig(f"{BENCH_TYPE}.png", dpi=600, bbox_inches="tight")
+    ax.text(
+        0.99,
+        0.01,
+        f"""Iterations: {str(len(lenghts))}
+        max merge delta: {max([(hi - low) for (hi, low) in zip(merge_max, merge_min)])}
+        max selection delta: {max([(hi - low) for (hi, low) in zip(selection_max, selection_min)])}""",
+        verticalalignment="bottom",
+        horizontalalignment="right",
+        transform=ax.transAxes,
+        size=8,
+        bbox=dict(facecolor="white", alpha=1.0),
+    )
+
+    plt.title(f"Sorting Comparison - {bench_type}")
+    plt.savefig(f"graphs/{bench_type}.png", dpi=600, bbox_inches="tight")
     plt.show()
 
 
 def main():
-    read_data(f"../output_data/{BENCH_TYPE}/")
+    read_args()
+    read_data(f"../output_data/{bench_type}/")
     proccess_data()
     make_plot()
 

@@ -1,24 +1,25 @@
 use Assignment_1_rs::other;
+use Assignment_1_rs::other::BenchType;
 use Assignment_1_rs::sorting;
 use gungraun::{library_benchmark, library_benchmark_group, main};
-use std::fs;
+use std::env;
 use std::fs::File;
 use std::hint::black_box;
 use std::io::Write;
-
-const BENCH_TYPE: &str = "reversed";
-
+use std::path::Path;
 // Get an array of the given size for testing
 fn get_test_array(size: String) -> Vec<i32> {
-    let array = match BENCH_TYPE {
-        "linear" => other::linear_array(size.parse().unwrap()),
-        "reversed" => other::reversed_array(size.parse().unwrap()),
-        "random" => other::reversed_array(size.parse().unwrap()),
-        _ => panic!("invalid benchmark type!"),
+    let bench_type = BenchType::from_file(Path::new("./benches/bench_type.txt"));
+    let array = match bench_type {
+        BenchType::Linear => other::linear_array(size.parse().unwrap()),
+        BenchType::Reversed => other::reversed_array(size.parse().unwrap()),
+        BenchType::Random => other::random_array(size.parse().unwrap()),
     };
 
-    let p = format!("./test_data/{}/{}.txt", BENCH_TYPE, size);
-    //fs::create_dir_all(&p).expect("couln't make test data directory");
+    let p = format!("./test_data/{}/{}.txt", bench_type, size);
+    println!("{}", p);
+
+    //fs::create_dir_all(&p).expect("couldn't make test data directory");
     let mut file = File::create(p.as_str()).unwrap();
     array
         .iter()
@@ -33,7 +34,7 @@ fn check_sorted(array: Vec<i32>) {
 
 // Benchmark the merge sort
 #[library_benchmark]
-#[benches::merge(file = "benches/lengths", setup = get_test_array, teardown = check_sorted)]
+#[benches::merge(file = "benches/lengths.txt", setup = get_test_array, teardown = check_sorted)]
 fn bench_merge(mut array: Vec<i32>) -> Vec<i32> {
     black_box(sorting::merge_sort(&mut array));
     black_box(array)
@@ -41,7 +42,7 @@ fn bench_merge(mut array: Vec<i32>) -> Vec<i32> {
 
 // Benchmark the selection sort
 #[library_benchmark]
-#[benches::selection(file = "benches/lengths", setup = get_test_array, teardown = check_sorted)]
+#[benches::selection(file = "benches/lengths.txt", setup = get_test_array, teardown = check_sorted)]
 fn bench_selection(mut array: Vec<i32>) -> Vec<i32> {
     black_box(sorting::selection_sort(&mut array));
     black_box(array)
