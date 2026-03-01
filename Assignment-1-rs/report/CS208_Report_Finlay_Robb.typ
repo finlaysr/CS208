@@ -1,6 +1,7 @@
 #import "conf.typ": conf
 #show: conf
 
+\
 #title()
 #let dot = [•]
 
@@ -21,7 +22,7 @@ When writing software, it is important to understand how the program will perfor
 This is done through benchmarking the program, with the most common method being measuring how long the program takes to run from start to finish, called wall time.
 However, this method is fundamentally limited by the fact that this is not a very precise or repeatable test, since the results depend entirely on the computer it was run on and what else that computer might have been doing at the time.
 This means that only results run on the same system can be directly compared, and even then the average of many runs should be used to get a more accurate result.
-This means that small changes might not be noticed, depending on the statistical methods used to review the output, and the output is typically quite noisy, with a high variance between runs.
+This means that small performance changes might not be noticed, and the output is typically quite noisy, with a high variance between runs.
 
 An alternative to wall time is instruction counting. At a basic level, this simply counts every assembly instruction executed during the program, returning the total.
 This means that the profiling output should be exactly the same every time it is run, assuming that the input and program are unchanged between runs.
@@ -39,10 +40,9 @@ Linear indicates a “best case” presorted array, and reversed indicates a “
 #pagebreak()
 = Prerequisites
 
-To perform the instruction counting, the Callgrind profiler, part of the Valgrind program, will be used.
+To perform the instruction counting, the Callgrind profiler, part of the Valgrind program, was used.
 This is a Linux program that records the call history of functions during a program run as a call-graph, and uses that to calculate the instruction count of a program.
-To interface with Callgrind, Gungraun was used.
-This is a rust library that connects the built-in rust benchmarking to Callgrind to record the instruction count of a Rust program.
+To interface with Callgrind, Gungraun was used, which is a rust library that connects the built-in rust benchmarking to Callgrind, to record the instruction count of a Rust program.
 Rust was chosen since there is zero overhead from garbage collection, and it is a relatively low-level language, so code corresponds very closely to the hardware, so the results should be very accurate.
 
 
@@ -85,16 +85,18 @@ For the random array, shown in @random-graph, the crossover point occurs at 66 e
 
 Even though the delta between the largest and smallest value for each run of the benchmark is shown on the graph in @random-graph, it is so small that it is hard to see. Therefore, a zoomed in version of the graph is shown in @random-graph-zoomed, which shows the delta more clearly. Even though a different random array was used in every run, the results are still very consistent, with the maximum delta being only 0.79% for merge sort, and 0.41% for selection sort.
 
+The benchmark was repeated 30 times for each length of array, this was due to time constraints (running with instruction counting massively increases the time it takes to run each benchmark), and the fact that instruction counting produces very consistent results.
+
 #figure(image("../py_plotting/graphs/random-zoomed.svg", width: 95%), caption: [
   A zoomed in version of the random graph, showing the delta between runs more clearly
 ]) <random-graph-zoomed>
 
+\
+
 Below, @linear-graph and @reversed-graph show the results for the linear and reversed arrays respectively.
 The crossover point stays roughly similar, being at 62 elements for the linear array, and 68 elements for the reversed array.
 
-
-The delta between runs in these graphs is zero, which shows the benefit of instruction counting - the results are exactly the same for each run, provided the input is the same every time.
-
+The delta between runs in these graphs is zero, which shows the benefit of instruction counting - the results are exactly the same for each run, provided the input is the same every time. This is also why these benchmarks were only repeated 10 times.
 
 One interesting observation is that the instruction count for selection sort is significantly lower when sorting a reversed array, compared to a random or linear array, which are almost identical.
 This is because it will perform a swap at every iteration of the loop when sorting a reversed array, resulting in fewer instructions overall.
