@@ -128,8 +128,9 @@ def make_plot():
         bbox=dict(facecolor="white", alpha=1.0),
     )
 
-    plt.title(f"Sorting Comparison - {bench_type}")
-    plt.savefig(f"graphs/{bench_type}.png", dpi=1000, bbox_inches="tight")
+    plt.title(f"Sorting Comparison - {bench_type.capitalize()} Array")
+    plt.savefig(f"graphs/{bench_type}.svg", dpi=1000, bbox_inches="tight")
+
     plt.show()
 
 
