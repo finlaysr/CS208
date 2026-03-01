@@ -29,8 +29,10 @@ pub fn parse_output(path: &Path, output_location: &Path) {
                         let iterations = get_iterations(fs::read_to_string(file.path()).unwrap());
                         if algo == "merge" {
                             merge_data.push(iterations);
-                        } else {
+                        } else if algo == "selection" {
                             selection_data.push(iterations);
+                        } else {
+                            panic!("Invalid algorithm in parsing log");
                         }
                     }
                 });

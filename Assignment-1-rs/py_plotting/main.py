@@ -3,7 +3,7 @@ import csv
 import os
 from matplotlib import pyplot as plt
 from numpy import average
-from sys import argv, exit
+from sys import exit
 
 lenghts: list[list[int]] = []
 selection: list[list[int]] = []
@@ -95,16 +95,17 @@ def make_plot():
     ax.grid(True, which="both")
     ax.set_xlim(left=0, right=100)
     ax.set_ylim(bottom=0, top=70_000)
-    ax.xaxis.set_major_locator(MultipleLocator(10))
     ax.tick_params(axis="both", grid_color="black")
+    ax.xaxis.set_major_locator(MultipleLocator(10))
     ax.xaxis.set_minor_locator(MultipleLocator(1))
+    ax.yaxis.set_major_locator(MultipleLocator(10_000))
     ax.yaxis.set_minor_locator(MultipleLocator(5_000))
 
     ax.annotate(
         f"""Point at which merge \nsort becomes more efficient
         ({str(crossover)}, {str(int(merge_avg[crossover]))})""",
         xycoords="data",
-        xytext=(0.02, 0.97),
+        xytext=(0.4, 0.6),
         textcoords="axes fraction",
         va="top",
         ha="left",
@@ -124,12 +125,13 @@ def make_plot():
         verticalalignment="bottom",
         horizontalalignment="right",
         transform=ax.transAxes,
-        size=7,
+        size=8,
         bbox=dict(facecolor="white", alpha=1.0),
     )
 
     plt.title(f"Sorting Comparison - {bench_type.capitalize()} Array")
     plt.savefig(f"graphs/{bench_type}.svg", dpi=1000, bbox_inches="tight")
+    plt.savefig(f"graphs/{bench_type}.png", dpi=1000, bbox_inches="tight")
 
     plt.show()
 

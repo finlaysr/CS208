@@ -12,6 +12,7 @@ pub enum BenchType {
     Random,
 }
 
+// Convert a file reading into this type
 impl BenchType {
     pub fn from_file(path: &Path) -> Self {
         fs::read_to_string(path)
