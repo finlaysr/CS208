@@ -78,6 +78,8 @@ The results of the benchmarks are shown in the graphs below, with an arrow point
 
 For the random array, shown in @random-graph, the crossover point occurs at 66 elements, with selection sort being faster for arrays below this length, and merge sort being faster for arrays above this length.
 
+It is also clear that the time complexity of selection sort increases much more rapidly than merge sort, with selection sort having a time complexity of $O(n^2)$, and merge sort having a time complexity of $O(n log n)$.
+
 
 #figure(image("../py_plotting/graphs/random.svg", width: 95%), caption: [
   Merge vs Selection sort for a randomly sorted array
@@ -85,7 +87,7 @@ For the random array, shown in @random-graph, the crossover point occurs at 66 e
 
 Even though the delta between the largest and smallest value for each run of the benchmark is shown on the graph in @random-graph, it is so small that it is hard to see. Therefore, a zoomed in version of the graph is shown in @random-graph-zoomed, which shows the delta more clearly. Even though a different random array was used in every run, the results are still very consistent, with the maximum delta being only 0.79% for merge sort, and 0.41% for selection sort.
 
-The benchmark was repeated 30 times for each length of array, this was due to time constraints (running with instruction counting massively increases the time it takes to run each benchmark), and the fact that instruction counting produces very consistent results.
+The benchmark was repeated 30 times for each length of array, this was chosen due to time constraints (running with instruction counting massively increases the time to run each benchmark), and the fact that instruction counting produces very consistent results.
 
 #figure(image("../py_plotting/graphs/random-zoomed.svg", width: 95%), caption: [
   A zoomed in version of the random graph, showing the delta between runs more clearly

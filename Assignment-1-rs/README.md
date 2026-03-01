@@ -10,14 +10,16 @@
 * Code overview:
   1. The main file starts and loads the type of benchmark to be run from `benches/bench_type.txt`. This is either `random`, `linear`, or `reversed`. This determines the layout of the array to be sorted
   2. The main file clears out all the directories to be used. This involves:
-    * `graphs` - legacy rust graphs generated after each benchmark
-    * `output_data` - where the gungraun data will be exported to
-    * `py_plotting/graphs` - modern python generated graphs
-    * `test_data` - data each sorting algorithm uses, stored for verification purposes
-  3. The benchmark is run repeatedly a certain amount of times
-  4. The data is extracted from `.log` files and stored in csv files in `output_data`
-  5. A python script runs `matplotlib` which generates a graph combining the data from all the runs
-  6. This graph is saved to a file
+      * `test_data` - data each sorting algorithm uses, stored for verification purposes
+      * `output_data` - where the gungraun data will be exported to
+      * `py_plotting/graphs` - modern python generated graphs
+      * `graphs` - legacy rust graphs generated after each benchmark
+  3. An array for all lengths specified in `benches/lengths.txt` is generated
+  4. The array is sorted using each algorithm, and the instruction count is recorded
+  5. The benchmark is repeated a certain amount of times
+  6. The data is extracted from `.log` files and stored in csv files in `output_data`
+  7. A python script runs `matplotlib` which generates a graph combining the data from all the runs
+  8. This graph is saved to a file
 
 ## Dependencies
 

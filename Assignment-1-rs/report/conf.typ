@@ -13,7 +13,6 @@
     leading: 0.52em,
   )
 
-  show title: set text(size: 17pt)
   show title: set align(center)
   show title: set block(below: 2em)
 
