@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 
 public class AlgorithmEvaluator {
 
-    private final static SchedulingResults RESULTS = new SchedulingResults();
+    private static final SchedulingResults RESULTS = new SchedulingResults();
 
     private final JobReader jobReader;
     private String pathToFile;
@@ -30,7 +30,7 @@ public class AlgorithmEvaluator {
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Future<double[]> result = executorService.submit(() ->
-                algorithm.runAlgorithm(jobReader.getEtcMatrix()));
+            algorithm.runAlgorithm(jobReader.getEtcMatrix()));
 
         try {
             double[] processorTimes = result.get(270, TimeUnit.SECONDS);
@@ -38,7 +38,7 @@ public class AlgorithmEvaluator {
             double makespan = calculateMakespan(processorTimes);
 
             grade = calculateGrade(makespan);
-        } catch (TimeoutException e) {
+        } catch (TimeoutException _) {
             System.out.println("Algorithm time exceeded!");
             result.cancel(true);
             grade = 0.0;
@@ -70,12 +70,13 @@ public class AlgorithmEvaluator {
         if (makespan < optimalMakeSpan) {
             grade = 0;
             System.out.println("Your makespan is lower than the optimal solution. " +
-                    "This likely means that your solution isn't correct. Make sure all jobs are being added to the processors");
+                "This likely means that your solution isn't correct. Make sure all jobs are being added to the processors");
             return grade;
         }
 
         if (makespan > baselineMakeSpan) {
-            return Math.round((highestMakeSpan - makespan) / (highestMakeSpan - baselineMakeSpan) * 40);
+            return Math.round(
+                (highestMakeSpan - makespan) / (highestMakeSpan - baselineMakeSpan) * 40);
         } else if (makespan > lowestMakeSpan) {
             grade = 100 - ((makespan - lowestMakeSpan) / (baselineMakeSpan - lowestMakeSpan)) * 60;
             return Math.round(grade);
@@ -102,8 +103,9 @@ public class AlgorithmEvaluator {
         String line = moduleCode + ", " + timestamp + ", " + grade + "\n";
 
         try {
-            Files.write(Paths.get(algorithm.getName() + "Results.txt"), line.getBytes(), StandardOpenOption.CREATE,
-                    StandardOpenOption.APPEND);
+            Files.write(Paths.get(algorithm.getName() + "Results.txt"), line.getBytes(),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND);
 
             // TODO: Add in SSH call to remote server
 

@@ -1,8 +1,8 @@
 package algorithms;
 
 /**
- * An example implementation of a very basic algorithm - Round Robin.
- * Can you understand what the algorithm is doing from its code?
+ * An example implementation of a very basic algorithm - Round Robin. Can you understand what the
+ * algorithm is doing from its code?
  */
 public class RoundRobinAlgorithm extends SchedulingAlgorithm {
 

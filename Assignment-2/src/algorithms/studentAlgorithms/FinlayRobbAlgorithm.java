@@ -5,10 +5,10 @@ import algorithms.SchedulingAlgorithm;
 /**
  * Please rename this class to FirstNameLastNameAlgorithm
  */
-public class YourAlgorithm extends SchedulingAlgorithm {
+public class FinlayRobbAlgorithm extends SchedulingAlgorithm {
 
     // Please put your name in here.
-    private String studentName = "Please Enter Your Name Here";
+    private String studentName = "Finlay Robb";
 
     /**
      * Fill in this method for your submission. You have a maximum of 4.5 minutes of processing time.

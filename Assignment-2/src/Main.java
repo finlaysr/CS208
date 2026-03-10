@@ -1,5 +1,6 @@
+import algorithms.RoundRobinAlgorithm;
 import algorithms.SchedulingAlgorithm;
-import algorithms.studentAlgorithms.YourAlgorithm;
+import algorithms.studentAlgorithms.FinlayRobbAlgorithm;
 import utilities.AlgorithmEvaluator;
 
 import javax.swing.*;
@@ -8,10 +9,11 @@ public class Main {
 
     public static void main(String[] args) {
         AlgorithmEvaluator algorithmEvaluator = new AlgorithmEvaluator();
-        SchedulingAlgorithm algorithm = new YourAlgorithm();
+        SchedulingAlgorithm algorithm = new RoundRobinAlgorithm();
 
         if (algorithm.getName().equals("Please Enter Your Name Here")) {
-            System.out.println("Invalid Name: Please enter your name into the YourAlgorithm file, " +
+            System.out.println(
+                "Invalid Name: Please enter your name into the YourAlgorithm file, " +
                     "and change the name of that file to FirstNameLastNameAlgorithm");
             System.out.println("You will not be able to submit your code until you do this.");
         } else {
