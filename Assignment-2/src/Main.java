@@ -1,6 +1,5 @@
-import algorithms.RoundRobinAlgorithm;
-import algorithms.SchedulingAlgorithm;
 import algorithms.studentAlgorithms.FinlayRobbAlgorithm;
+import algorithms.SchedulingAlgorithm;
 import utilities.AlgorithmEvaluator;
 
 import javax.swing.*;
@@ -9,7 +8,7 @@ public class Main {
 
     public static void main(String[] args) {
         AlgorithmEvaluator algorithmEvaluator = new AlgorithmEvaluator();
-        SchedulingAlgorithm algorithm = new RoundRobinAlgorithm();
+        SchedulingAlgorithm algorithm = new FinlayRobbAlgorithm();
 
         if (algorithm.getName().equals("Please Enter Your Name Here")) {
             System.out.println(
@@ -19,7 +18,7 @@ public class Main {
         } else {
 
             // If you would like to see a chart of your progress over time, set this to true
-            boolean viewChart = true;
+            boolean viewChart = false;
 
             double grade = 0.0;
 
