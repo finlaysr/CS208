@@ -46,6 +46,7 @@ public class AlgorithmEvaluator {
         } catch (Exception e) {
             System.out.println("Error running algorithm. " + e.getMessage());
             e.printStackTrace();
+            System.exit(1);
         }
         executorService.shutdown();
         printGradeEvaluation(grade, algorithm);
