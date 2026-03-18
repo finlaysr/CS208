@@ -7,11 +7,17 @@ import java.util.Arrays;
 public class FinlayRobbAlgorithm extends SchedulingAlgorithm {
 
   private final String name = "Finlay Robb Algorithm";
+  double[][] etcMatrix;
+  int numberOfProcessors;
+  int numberOfTasks;
 
   @Override
   public double[] runAlgorithm(double[][] etcMatrix) {
-    int numberOfProcessors = etcMatrix.length;
-    int numberOfTasks = etcMatrix[0].length;
+    this.etcMatrix = etcMatrix;
+    numberOfProcessors = etcMatrix.length;
+    numberOfTasks = etcMatrix[0].length;
+
+    double[] processorTimes = new double[numberOfProcessors];
 
     // 2D array to hold the tasks done by each CPU
     ArrayList<Integer>[] tasksUsed = new ArrayList[numberOfProcessors];
@@ -19,79 +25,11 @@ public class FinlayRobbAlgorithm extends SchedulingAlgorithm {
       tasksUsed[i] = new ArrayList<>();
     }
 
-    double[] processorTimes = new double[numberOfProcessors];
+    // Run Min-min algorithm
+    minMin(processorTimes, tasksUsed);
 
-    ArrayList<Integer> unused = new ArrayList<>();
-    for (int i = 0; i < numberOfTasks; i++) {
-      unused.add(i);
-    }
-
-    // Min-min algorithm
-    while (!unused.isEmpty()) {
-      int minCPU = 0;
-      int minTask = unused.getFirst();
-      for (Integer task : unused) {
-        for (int cpu = 0; cpu < numberOfProcessors; cpu++) {
-          if ((processorTimes[cpu] + etcMatrix[cpu][task])
-              < (processorTimes[minCPU] + etcMatrix[minCPU][minTask])) {
-            minCPU = cpu;
-            minTask = task;
-          }
-        }
-      }
-
-      unused.remove((Integer) minTask);
-      processorTimes[minCPU] += etcMatrix[minCPU][minTask];
-
-      tasksUsed[minCPU].add(minTask);
-    }
-
-    // Local search
-    int c = 0; // ensure we don't get stuck in a loop
-    while (c++ < 100000) {
-      // Find current worst cpu in processorTimes
-      int worstCPU = 0;
-      for (int cpu = 1; cpu < numberOfProcessors; cpu++) {
-        if (processorTimes[cpu] > processorTimes[worstCPU]) {
-          worstCPU = cpu;
-        }
-      }
-
-      // Find the move that will reduce the makespan the most
-      double bestMS = processorTimes[worstCPU];
-      int bestTaskToMove = 999999;
-      int bestCPUToMoveTo = 999999;
-
-      // try moving all the different tasks off the worst cpu
-      for (int task : tasksUsed[worstCPU]) {
-        // find the best place to move it to
-        for (int newCPU = 0; newCPU < numberOfProcessors; newCPU++) {
-          if (worstCPU != newCPU) {
-            double newMS =
-                Math.max(
-                    processorTimes[worstCPU] - etcMatrix[worstCPU][task],
-                    processorTimes[newCPU] + etcMatrix[newCPU][task]);
-            if (newMS < bestMS) {
-              bestMS = newMS;
-              bestTaskToMove = task;
-              bestCPUToMoveTo = newCPU;
-            }
-          }
-        }
-      }
-
-      // An improvement wasn't found so stop
-      if (bestTaskToMove == 999999 || bestCPUToMoveTo == 999999) {
-        break;
-      }
-
-      // move task from worst cpu to best cpu
-      tasksUsed[worstCPU].remove((Integer) bestTaskToMove);
-      tasksUsed[bestCPUToMoveTo].add(bestTaskToMove);
-
-      processorTimes[worstCPU] -= etcMatrix[worstCPU][bestTaskToMove];
-      processorTimes[bestCPUToMoveTo] += etcMatrix[bestCPUToMoveTo][bestTaskToMove];
-    }
+    // Run Local search
+    localSearch(processorTimes, tasksUsed);
 
     // check every task has been used
     ArrayList<Integer> allTasks = new ArrayList<>();
@@ -122,5 +60,79 @@ public class FinlayRobbAlgorithm extends SchedulingAlgorithm {
 
   public String getName() {
     return name;
+  }
+
+  private void minMin(double[] processorTimes, ArrayList<Integer>[] tasksUsed ){
+    ArrayList<Integer> unused = new ArrayList<>();
+    for (int i = 0; i < numberOfTasks; i++) {
+      unused.add(i);
+    }
+
+    while (!unused.isEmpty()) {
+      int minCPU = 0;
+      int minTask = unused.getFirst();
+      for (Integer task : unused) {
+        for (int cpu = 0; cpu < numberOfProcessors; cpu++) {
+          if ((processorTimes[cpu] + etcMatrix[cpu][task])
+            < (processorTimes[minCPU] + etcMatrix[minCPU][minTask])) {
+            minCPU = cpu;
+            minTask = task;
+          }
+        }
+      }
+
+      unused.remove((Integer) minTask);
+      processorTimes[minCPU] += etcMatrix[minCPU][minTask];
+
+      tasksUsed[minCPU].add(minTask);
+    }
+  }
+
+  private void localSearch(double[] processorTimes, ArrayList<Integer>[] tasksUsed ){
+    int c = 0; // ensure we don't get stuck in a loop
+    while (c++ < 100000) {
+      // Find current worst cpu in processorTimes
+      int worstCPU = 0;
+      for (int cpu = 1; cpu < numberOfProcessors; cpu++) {
+        if (processorTimes[cpu] > processorTimes[worstCPU]) {
+          worstCPU = cpu;
+        }
+      }
+
+      // Find the move that will reduce the makespan the most
+      double bestMS = processorTimes[worstCPU];
+      int bestTaskToMove = 999999;
+      int bestCPUToMoveTo = 999999;
+
+      // try moving all the different tasks off the worst cpu
+      for (int task : tasksUsed[worstCPU]) {
+        // find the best place to move it to
+        for (int newCPU = 0; newCPU < numberOfProcessors; newCPU++) {
+          if (worstCPU != newCPU) {
+            double newMS =
+              Math.max(
+                processorTimes[worstCPU] - etcMatrix[worstCPU][task],
+                processorTimes[newCPU] + etcMatrix[newCPU][task]);
+            if (newMS < bestMS) {
+              bestMS = newMS;
+              bestTaskToMove = task;
+              bestCPUToMoveTo = newCPU;
+            }
+          }
+        }
+      }
+
+      // An improvement wasn't found so stop
+      if (bestTaskToMove == 999999 || bestCPUToMoveTo == 999999) {
+        break;
+      }
+
+      // move task from worst cpu to best cpu
+      tasksUsed[worstCPU].remove((Integer) bestTaskToMove);
+      tasksUsed[bestCPUToMoveTo].add(bestTaskToMove);
+
+      processorTimes[worstCPU] -= etcMatrix[worstCPU][bestTaskToMove];
+      processorTimes[bestCPUToMoveTo] += etcMatrix[bestCPUToMoveTo][bestTaskToMove];
+    }
   }
 }
