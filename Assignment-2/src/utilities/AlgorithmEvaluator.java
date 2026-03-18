@@ -26,7 +26,7 @@ public class AlgorithmEvaluator {
     public double evaluateAlgorithm(SchedulingAlgorithm algorithm, String pathToFile) {
         this.pathToFile = pathToFile;
         jobReader.readFileIntoETCMatrix(pathToFile);
-        jobReader.printETCMatrix();
+        //jobReader.printETCMatrix();
         double grade = 0.0;
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();

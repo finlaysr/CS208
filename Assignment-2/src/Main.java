@@ -18,7 +18,7 @@ public class Main {
         } else {
 
             // If you would like to see a chart of your progress over time, set this to true
-            boolean viewChart = true;
+            boolean viewChart = false;
 
             double grade = 0.0;
 

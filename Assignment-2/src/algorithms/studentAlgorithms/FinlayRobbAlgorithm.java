@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class FinlayRobbAlgorithm extends SchedulingAlgorithm {
 
-  private final String name = "Min Min Algorithm";
+  private final String name = "Finlay Robb Algorithm";
 
   @Override
   public double[] runAlgorithm(double[][] etcMatrix) {
@@ -32,8 +32,8 @@ public class FinlayRobbAlgorithm extends SchedulingAlgorithm {
       int minTask = unused.getFirst();
       for (Integer task : unused) {
         for (int cpu = 0; cpu < numberOfProcessors; cpu++) {
-          if ((processorTimes[cpu] + etcMatrix[cpu][task]) < (processorTimes[minCPU]
-              + etcMatrix[minCPU][minTask])) {
+          if ((processorTimes[cpu] + etcMatrix[cpu][task])
+              < (processorTimes[minCPU] + etcMatrix[minCPU][minTask])) {
             minCPU = cpu;
             minTask = task;
           }
@@ -47,10 +47,8 @@ public class FinlayRobbAlgorithm extends SchedulingAlgorithm {
     }
 
     // Local search
-    boolean continueSearch = true;
-    int c = 0;
-
-    while (continueSearch) {
+    int c = 0; // ensure we don't get stuck in a loop
+    while (c++ < 100000) {
       // Find current worst cpu in processorTimes
       int worstCPU = 0;
       for (int cpu = 1; cpu < numberOfProcessors; cpu++) {
@@ -61,21 +59,20 @@ public class FinlayRobbAlgorithm extends SchedulingAlgorithm {
 
       // Find the move that will reduce the makespan the most
       double bestMS = processorTimes[worstCPU];
-      double oldMS = bestMS;
       int bestTaskToMove = 999999;
       int bestCPUToMoveTo = 999999;
 
-      double ams = 0;
-
-      for (int task: tasksUsed[worstCPU]) {
+      // try moving all the different tasks off the worst cpu
+      for (int task : tasksUsed[worstCPU]) {
         // find the best place to move it to
         for (int newCPU = 0; newCPU < numberOfProcessors; newCPU++) {
           if (worstCPU != newCPU) {
-            double newMS = Math.max(processorTimes[worstCPU] - etcMatrix[worstCPU][task],
-                processorTimes[newCPU] + etcMatrix[newCPU][task]);
+            double newMS =
+                Math.max(
+                    processorTimes[worstCPU] - etcMatrix[worstCPU][task],
+                    processorTimes[newCPU] + etcMatrix[newCPU][task]);
             if (newMS < bestMS) {
               bestMS = newMS;
-              ams = newMS;
               bestTaskToMove = task;
               bestCPUToMoveTo = newCPU;
             }
@@ -83,18 +80,41 @@ public class FinlayRobbAlgorithm extends SchedulingAlgorithm {
         }
       }
 
-      // An improvement wasn't found or got stuck in some loop
-      if (bestTaskToMove == 999999 || bestCPUToMoveTo == 999999 || c > 100000) {
+      // An improvement wasn't found so stop
+      if (bestTaskToMove == 999999 || bestCPUToMoveTo == 999999) {
         break;
       }
 
       // move task from worst cpu to best cpu
-      tasksUsed[worstCPU].remove(tasksUsed[worstCPU].indexOf(bestTaskToMove));
+      tasksUsed[worstCPU].remove((Integer) bestTaskToMove);
       tasksUsed[bestCPUToMoveTo].add(bestTaskToMove);
 
       processorTimes[worstCPU] -= etcMatrix[worstCPU][bestTaskToMove];
       processorTimes[bestCPUToMoveTo] += etcMatrix[bestCPUToMoveTo][bestTaskToMove];
+    }
 
+    // check every task has been used
+    ArrayList<Integer> allTasks = new ArrayList<>();
+    for (int i = 0; i < numberOfTasks; i++) {
+      allTasks.add(i);
+    }
+
+    Arrays.stream(tasksUsed).forEach(inner -> inner.forEach(allTasks::remove));
+    if (!allTasks.isEmpty()) {
+      System.out.println("All tasks not used!");
+      System.exit(1);
+    }
+
+    // check tasks add up properly
+    final double epsilon = 1e-6; // need this due to floating point errors
+    for (int i = 0; i < numberOfProcessors; i++) {
+      int finalI = i;
+      double summedTime =
+          tasksUsed[i].stream().map(t -> etcMatrix[finalI][t]).reduce(0.0, Double::sum);
+      if (Math.abs(summedTime - processorTimes[i]) > epsilon) {
+        System.out.println("Task times don't match!");
+        System.exit(1);
+      }
     }
 
     return processorTimes;
@@ -103,5 +123,4 @@ public class FinlayRobbAlgorithm extends SchedulingAlgorithm {
   public String getName() {
     return name;
   }
-
 }
